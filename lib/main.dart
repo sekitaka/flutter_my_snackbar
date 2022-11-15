@@ -47,12 +47,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     }
 
     final bodyHeight = 60;
-    final bodyHeightWithSafeArea =
-        bodyHeight + MediaQuery.of(context).padding.bottom;
+    final safeAreaHeight = MediaQuery.of(context).padding.bottom ;
+    final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight;
     final body = Container(
       width: width,
       height: bodyHeightWithSafeArea,
       color: Colors.amber,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: safeAreaHeight, left: 16, top: 8, right: 16),
+        child: GridPaper(
+          color: Colors.green,
+          child: Row(
+            children: [
+              Expanded(child: Text("テキステキステキステキステキステキステキステキステキストトトトトトトトトテキスト")),
+              SizedBox(width: 8,),
+              TextButton(onPressed: () {}, child: Text("OK")),
+            ],
+          ),
+        ),
+      ),
     );
     final entry = OverlayEntry(
         builder: (context) {
@@ -84,11 +97,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     rootOverlay?.insert(entry);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(middle: Text("独自SnackBarの作り方"),),
+      navigationBar: CupertinoNavigationBar(
+        middle: Text("独自SnackBarの作り方"),
+      ),
       // ■ScaffoldならSnackBar出る
       child: Center(
         child: Column(
