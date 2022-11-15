@@ -27,16 +27,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController animationController1;
   late AnimationController animationController2;
-  bool _show = false;
 
   @override
   void initState() {
     super.initState();
     animationController1 =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    animationController1.addListener(() {
-      print("animation listener");
-    });
     animationController2 =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
   }
@@ -85,20 +81,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ..addListener(() async {
         animationController1.forward();
       });
-    setState(() {
-      _show = !_show;
-    });
     rootOverlay?.insert(entry);
   }
 
-  void _hoge(BuildContext context) {
-    animationController1.forward();
-    animationController2.forward();
-  }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(middle: Text("独自SnackBarの作り方"),),
       // ■ScaffoldならSnackBar出る
       child: Center(
         child: Column(
@@ -107,72 +97,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ElevatedButton(
                 onPressed: () => _showSnackBar(context),
                 child: Text("Show Snackbar")),
-            ElevatedButton(
-                onPressed: () => _hoge(context), child: Text("hoge")),
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: Stack(
-                children: [
-                  AlignTransition(
-                      alignment: Tween<AlignmentGeometry>(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                      ).animate(CurvedAnimation(
-                          parent: animationController1, curve: Curves.linear)),
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        color: Colors.pink,
-                      ))
-                ],
-              ),
-            ),
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: Stack(
-                children: [
-                  AlignTransition(
-                      alignment: Tween<AlignmentGeometry>(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ).animate(CurvedAnimation(
-                          parent: animationController2, curve: Curves.linear)),
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        color: Colors.green,
-                      ))
-                ],
-              ),
-            ),
-            SizedBox(
-              width: 200,
-              height: 350,
-              child: Stack(
-                children: <Widget>[
-                  AnimatedPositioned(
-                    width: _show ? 200.0 : 50.0,
-                    height: _show ? 50.0 : 200.0,
-                    top: _show ? 50.0 : 150.0,
-                    duration: const Duration(seconds: 2),
-                    curve: Curves.fastOutSlowIn,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _show = !_show;
-                        });
-                      },
-                      child: Container(
-                        color: Colors.blue,
-                        child: const Center(child: Text('Tap me')),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),
