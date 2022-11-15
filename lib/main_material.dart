@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
+    return MaterialApp(
       // MaterialAppならSnackBar出る
       home: const MyHomePage(),
     );
@@ -44,12 +44,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text("独自SnackBarの作り方"),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text("独自SnackBarの作り方"),),
       // ■ScaffoldならSnackBar出る
-      child: Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -58,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 child: Text("独自Snackbarを標示")),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (c){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (c){
                     return MyHomePage();
                   }));
                 },
