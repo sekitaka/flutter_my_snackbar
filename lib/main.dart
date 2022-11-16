@@ -1,17 +1,24 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_snackbar/my_snackbar.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final MySnackBarNavigationObserver mySnackBarNavigationObserver =
+      MySnackBarNavigationObserver();
 
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
+      // 画面遷移のタイミングで表示されているSnackBarを非表示にする
+      navigatorObservers: [mySnackBarNavigationObserver],
       // MaterialAppならSnackBar出る
       home: const MyHomePage(),
     );
@@ -39,7 +46,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   void _showSnackBar(BuildContext context) async {
-    showMySnackBar(context: context, message: "message");
+    final messageId = Random().nextInt(4);
+    final String message;
+    switch (messageId){
+      case 0:
+        message = "message";
+        break;
+      case 1:
+        message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\$";
+        break;
+      case 2:
+        message = "メッセージ";
+        break;
+      case 3:
+        message = "私はすべてどうしてもその道楽顔とともにののうちにあっんた。もし多数を反抗家はおそらくその説明ですただってが考えでいるですには成就聞いでんて、そうには当てたでしたた。偽りを当てるだものも初めて今がじっとないなう。\$";
+        break;
+      default:
+        message = "message";
+    }
+    showMySnackBar(context: context, message: message);
   }
 
   @override
@@ -55,10 +80,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           children: <Widget>[
             ElevatedButton(
                 onPressed: () => _showSnackBar(context),
-                child: Text("独自Snackbarを標示")),
+                child: Text("独自Snackbar")),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (c){
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (c) {
                     return MyHomePage();
                   }));
                 },

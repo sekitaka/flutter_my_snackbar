@@ -5,22 +5,39 @@ showMySnackBar(
     {required BuildContext context,
     required String message,
     VoidCallback? onOkTapped}) {
-  MySnackBarController(
+  final c = _MySnackBarController(
       context: context, message: message, onOkTapped: onOkTapped)
     ..show();
+  _snackBarControllers.add(c);
 }
 
-class MySnackBarController {
+final List<_MySnackBarController> _snackBarControllers = [];
+
+dismissAllMySnackBar() {
+  _snackBarControllers.forEach((element) {
+    if (!element.isDismissed) {
+      element._dismiss();
+    }
+  });
+
+  print(
+      "snackBarControllers count:${_snackBarControllers.length} @before clean");
+  _snackBarControllers.removeWhere((element) => element.isDismissed);
+  print(
+      "snackBarControllers a count:${_snackBarControllers.length} @after clean");
+}
+
+class _MySnackBarController {
   late AnimationController controller;
   late OverlayState overlay;
   OverlayEntry? overlayEntry;
   String message;
   VoidCallback? onOkTapped;
-  bool isDismissing = false;
+  bool isDismissed = false;
 
   BuildContext context;
 
-  MySnackBarController(
+  _MySnackBarController(
       {required this.context,
       required this.message,
       VoidCallback? onOkTapped}) {
@@ -31,22 +48,27 @@ class MySnackBarController {
         vsync: rootOverlay!, duration: const Duration(seconds: 2))
       ..addStatusListener((status) {
         print("animation status changed:${status}");
-        if (isDismissing == true && status == AnimationStatus.dismissed){
-          print("Remove overlay");
-          overlayEntry?.remove();
+        if (status == AnimationStatus.dismissed) {
+          _onDismissFinished();
         }
       });
     this.onOkTapped = () {
-      dismiss();
+      _dismiss();
       if (onOkTapped != null) {
         onOkTapped();
       }
     };
   }
 
-  dismiss() {
-    isDismissing = true;
+  _dismiss() {
     controller.reverse();
+  }
+
+  _onDismissFinished() {
+    print("Remove overlay");
+    overlayEntry?.remove();
+    overlayEntry = null;
+    isDismissed = true;
   }
 
   show() {
@@ -71,7 +93,7 @@ class MySnackBarController {
                           begin: Offset(0, 1),
                           end: Offset(0, 0),
                         ).animate(controller),
-                        child: MySnackBar(
+                        child: _MySnackBar(
                           message: message,
                           onOkTapped: onOkTapped,
                         ))
@@ -90,23 +112,21 @@ class MySnackBarController {
   }
 }
 
-class MySnackBar extends StatefulWidget {
+class _MySnackBar extends StatefulWidget {
   String message;
   VoidCallback? onOkTapped;
 
-  MySnackBar({required this.message, this.onOkTapped});
+  _MySnackBar({required this.message, this.onOkTapped});
 
   @override
   State createState() => _MySnackBarState();
 }
 
-class _MySnackBarState extends State<MySnackBar> with TickerProviderStateMixin {
-  late AnimationController controller;
+class _MySnackBarState extends State<_MySnackBar>
+    with TickerProviderStateMixin {
 
   @override
   void initState() {
-    controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2));
     super.initState();
   }
 
@@ -133,16 +153,40 @@ class _MySnackBarState extends State<MySnackBar> with TickerProviderStateMixin {
           color: Colors.green,
           child: Row(
             children: [
-              Expanded(child: Text(widget.message)),
-              SizedBox(
+              Expanded(
+                  child: Text(
+                widget.message,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14, height: 1.2),
+              )),
+              const SizedBox(
                 width: 8,
               ),
-              TextButton(onPressed: () => _onOkTapped(), child: Text("OK")),
+              TextButton(
+                  onPressed: () => _onOkTapped(),
+                  child: const Text(
+                    "OK",
+                  )),
             ],
           ),
         ),
       ),
     );
     return body;
+  }
+}
+
+class MySnackBarNavigationObserver extends NavigatorObserver {
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print("didPush");
+    dismissAllMySnackBar();
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print("didPop");
+    dismissAllMySnackBar();
   }
 }
