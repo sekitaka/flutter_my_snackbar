@@ -27,20 +27,35 @@ dismissAllMySnackBar() {
       "snackBarControllers a count:${_snackBarControllers.length} @after clean");
 }
 
-class _MySnackBarController {
+class _MySnackBarController with WidgetsBindingObserver {
   late AnimationController controller;
   late OverlayState overlay;
   OverlayEntry? overlayEntry;
   String message;
   VoidCallback? onOkTapped;
+  bool isDismissCalled = false;
   bool isDismissed = false;
 
   BuildContext context;
+
+
+  // https://github.com/surfstudio/flutter-bottom-inset-observer/blob/main/lib/src/bottom_inset_observer.dart
+  @override
+  void didChangeMetrics() {
+    final window = WidgetsBinding.instance.window;
+    final inset = window.viewInsets.bottom / window.devicePixelRatio;
+    print("didChangeMetrics:$inset");
+    // キーボードの表示非表示を検知したら閉じる
+    _dismiss();
+  }
+
 
   _MySnackBarController(
       {required this.context,
       required this.message,
       VoidCallback? onOkTapped}) {
+    WidgetsBinding.instance.addObserver(this); // TODO dispose
+
     // final rootOverlay = Navigator.of(context, rootNavigator: true).overlay;
     final rootOverlay = Overlay.of(context);
     overlay = rootOverlay!;
@@ -61,7 +76,11 @@ class _MySnackBarController {
   }
 
   _dismiss() {
-    controller.reverse();
+    if (!isDismissCalled){
+      controller.reverse();
+      WidgetsBinding.instance.removeObserver(this);
+    }
+    isDismissCalled = true;
   }
 
   _onDismissFinished() {
@@ -75,7 +94,8 @@ class _MySnackBarController {
     final width = MediaQuery.of(context).size.width;
     final bodyHeight = 60;
     final safeAreaHeight = MediaQuery.of(context).padding.bottom;
-    final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight;
+    final bottomViewInsets = MediaQuery.of(context).viewInsets.bottom;
+    final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight + bottomViewInsets;
 
     final entry = OverlayEntry(
         builder: (context) {
@@ -141,6 +161,8 @@ class _MySnackBarState extends State<_MySnackBar>
     final width = MediaQuery.of(context).size.width;
     final bodyHeight = 60;
     final safeAreaHeight = MediaQuery.of(context).padding.bottom;
+    // final hoge = MediaQuery.of(context).viewInsets.bottom;
+    // final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight + hoge;
     final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight;
     final body = Container(
       width: width,

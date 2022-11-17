@@ -33,33 +33,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  late AnimationController animationController1;
-  late AnimationController animationController2;
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    animationController1 =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    animationController2 =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
   }
 
   void _showSnackBar(BuildContext context) async {
     final messageId = Random().nextInt(4);
     final String message;
-    switch (messageId){
+    switch (messageId) {
       case 0:
         message = "message";
         break;
       case 1:
-        message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\$";
+        message =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\$";
         break;
       case 2:
         message = "メッセージ";
         break;
       case 3:
-        message = "私はすべてどうしてもその道楽顔とともにののうちにあっんた。もし多数を反抗家はおそらくその説明ですただってが考えでいるですには成就聞いでんて、そうには当てたでしたた。偽りを当てるだものも初めて今がじっとないなう。\$";
+        message =
+            "私はすべてどうしてもその道楽顔とともにののうちにあっんた。もし多数を反抗家はおそらくその説明ですただってが考えでいるですには成就聞いでんて、そうには当てたでしたた。偽りを当てるだものも初めて今がじっとないなう。\$";
         break;
       default:
         message = "message";
@@ -88,6 +85,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   }));
                 },
                 child: Text("次の画面へ")),
+            Padding(
+              padding: const EdgeInsets.only(left: 16,right: 16),
+              child: CupertinoTextField(controller: _textEditingController,),
+            )
           ],
         ),
       ),
