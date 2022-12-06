@@ -5,10 +5,10 @@ showMySnackBar(
     {required BuildContext context,
     required String message,
     VoidCallback? onOkTapped}) {
-  final c = _MySnackBarController(
+  final controller = _MySnackBarController(
       context: context, message: message, onOkTapped: onOkTapped)
     ..show();
-  _snackBarControllers.add(c);
+  _snackBarControllers.add(controller);
 }
 
 final List<_MySnackBarController> _snackBarControllers = [];
@@ -35,9 +35,7 @@ class _MySnackBarController with WidgetsBindingObserver {
   VoidCallback? onOkTapped;
   bool isDismissCalled = false;
   bool isDismissed = false;
-
   BuildContext context;
-
 
   // https://github.com/surfstudio/flutter-bottom-inset-observer/blob/main/lib/src/bottom_inset_observer.dart
   @override
@@ -49,18 +47,16 @@ class _MySnackBarController with WidgetsBindingObserver {
     _dismiss();
   }
 
-
   _MySnackBarController(
       {required this.context,
       required this.message,
       VoidCallback? onOkTapped}) {
-    WidgetsBinding.instance.addObserver(this); // TODO dispose
+    WidgetsBinding.instance.addObserver(this);
 
-    // final rootOverlay = Navigator.of(context, rootNavigator: true).overlay;
     final rootOverlay = Overlay.of(context);
     overlay = rootOverlay!;
     controller = AnimationController(
-        vsync: rootOverlay!, duration: const Duration(seconds: 2))
+        vsync: rootOverlay!, duration: const Duration(milliseconds: 200))
       ..addStatusListener((status) {
         print("animation status changed:${status}");
         if (status == AnimationStatus.dismissed) {
@@ -76,7 +72,7 @@ class _MySnackBarController with WidgetsBindingObserver {
   }
 
   _dismiss() {
-    if (!isDismissCalled){
+    if (!isDismissCalled) {
       controller.reverse();
       WidgetsBinding.instance.removeObserver(this);
     }
@@ -95,30 +91,29 @@ class _MySnackBarController with WidgetsBindingObserver {
     final bodyHeight = 60;
     final safeAreaHeight = MediaQuery.of(context).padding.bottom;
     final bottomViewInsets = MediaQuery.of(context).viewInsets.bottom;
-    final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight + bottomViewInsets;
+    final bodyHeightWithSafeArea =
+        bodyHeight + safeAreaHeight + bottomViewInsets;
 
     final entry = OverlayEntry(
         builder: (context) {
           return Container(
             alignment: Alignment.bottomCenter,
-            child: GridPaper(
-              child: SizedBox(
-                height: bodyHeightWithSafeArea,
-                width: width,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    SlideTransition(
-                        position: Tween<Offset>(
-                          begin: Offset(0, 1),
-                          end: Offset(0, 0),
-                        ).animate(controller),
-                        child: _MySnackBar(
-                          message: message,
-                          onOkTapped: onOkTapped,
-                        ))
-                  ],
-                ),
+            child: SizedBox(
+              height: bodyHeightWithSafeArea,
+              width: width,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SlideTransition(
+                      position: Tween<Offset>(
+                        begin: Offset(0, 1),
+                        end: Offset(0, 0),
+                      ).animate(controller),
+                      child: _MySnackBar(
+                        message: message,
+                        onOkTapped: onOkTapped,
+                      ))
+                ],
               ),
             ),
           );
@@ -144,7 +139,6 @@ class _MySnackBar extends StatefulWidget {
 
 class _MySnackBarState extends State<_MySnackBar>
     with TickerProviderStateMixin {
-
   @override
   void initState() {
     super.initState();
@@ -161,8 +155,6 @@ class _MySnackBarState extends State<_MySnackBar>
     final width = MediaQuery.of(context).size.width;
     final bodyHeight = 60;
     final safeAreaHeight = MediaQuery.of(context).padding.bottom;
-    // final hoge = MediaQuery.of(context).viewInsets.bottom;
-    // final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight + hoge;
     final bodyHeightWithSafeArea = bodyHeight + safeAreaHeight;
     final body = Container(
       width: width,
@@ -171,27 +163,24 @@ class _MySnackBarState extends State<_MySnackBar>
       child: Padding(
         padding: EdgeInsets.only(
             bottom: safeAreaHeight, left: 16, top: 8, right: 16),
-        child: GridPaper(
-          color: Colors.green,
-          child: Row(
-            children: [
-              Expanded(
-                  child: Text(
-                widget.message,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14, height: 1.2),
-              )),
-              const SizedBox(
-                width: 8,
-              ),
-              TextButton(
-                  onPressed: () => _onOkTapped(),
-                  child: const Text(
-                    "OK",
-                  )),
-            ],
-          ),
+        child: Row(
+          children: [
+            Expanded(
+                child: Text(
+              widget.message,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14, height: 1.2),
+            )),
+            const SizedBox(
+              width: 8,
+            ),
+            TextButton(
+                onPressed: () => _onOkTapped(),
+                child: const Text(
+                  "OK",
+                )),
+          ],
         ),
       ),
     );

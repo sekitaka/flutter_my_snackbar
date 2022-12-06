@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
+      localizationsDelegates: [DefaultMaterialLocalizations.delegate],
       // 画面遷移のタイミングで表示されているSnackBarを非表示にする
       navigatorObservers: [mySnackBarNavigationObserver],
       // MaterialAppならSnackBar出る
@@ -71,13 +72,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         middle: Text("独自SnackBarの作り方"),
       ),
       // ■ScaffoldならSnackBar出る
-      child: Center(
+      child: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-                onPressed: () => _showSnackBar(context),
-                child: Text("独自Snackbar")),
             ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(CupertinoPageRoute(builder: (c) {
@@ -85,6 +83,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   }));
                 },
                 child: Text("次の画面へ")),
+            ElevatedButton(
+                onPressed: () => _showSnackBar(context),
+                child: Text("独自Snackbar")),
             Padding(
               padding: const EdgeInsets.only(left: 16,right: 16),
               child: CupertinoTextField(controller: _textEditingController,),
