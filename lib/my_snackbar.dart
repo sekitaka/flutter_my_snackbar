@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// SnackBarを表示する
 showMySnackBar(
     {required BuildContext context,
     required String message,
@@ -11,9 +12,8 @@ showMySnackBar(
   _snackBarControllers.add(controller);
 }
 
-final List<_MySnackBarController> _snackBarControllers = [];
-
-dismissAllMySnackBar() {
+// すべて表示中のSnackBarを削除する
+_dismissAllMySnackBar() {
   _snackBarControllers.forEach((element) {
     if (!element.isDismissed) {
       element._dismiss();
@@ -27,6 +27,11 @@ dismissAllMySnackBar() {
       "snackBarControllers a count:${_snackBarControllers.length} @after clean");
 }
 
+// 表示中のSnackBarController
+final List<_MySnackBarController> _snackBarControllers = [];
+
+
+// SnackBarのアニメーションや表示状態を管理する
 class _MySnackBarController with WidgetsBindingObserver {
   late AnimationController controller;
   late OverlayState overlay;
@@ -127,6 +132,7 @@ class _MySnackBarController with WidgetsBindingObserver {
   }
 }
 
+// SnackBar自体のウィジェット
 class _MySnackBar extends StatefulWidget {
   String message;
   VoidCallback? onOkTapped;
@@ -188,16 +194,18 @@ class _MySnackBarState extends State<_MySnackBar>
   }
 }
 
+// 画面移動時にSnackBarを削除するためのオブザーバー
+// CupertinoAppやMaterialAppの生成時に指定する
 class MySnackBarNavigationObserver extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     print("didPush");
-    dismissAllMySnackBar();
+    _dismissAllMySnackBar();
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     print("didPop");
-    dismissAllMySnackBar();
+    _dismissAllMySnackBar();
   }
 }

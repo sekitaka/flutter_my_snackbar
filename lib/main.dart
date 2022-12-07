@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text("独自SnackBarの作り方"),
+        middle: Text("独自SnackBar"),
       ),
       // ■ScaffoldならSnackBar出る
       child: SafeArea(
